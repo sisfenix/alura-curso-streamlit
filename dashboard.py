@@ -39,9 +39,6 @@ vendas_mensal['Ano'] = vendas_mensal['Data da Compra'].dt.year
 vendas_mensal['Mes'] = vendas_mensal['Data da Compra'].dt.month_name()
 
 vendas_categorias = pd.DataFrame(dados.groupby('Categoria do Produto')['Preço'].count().sort_values(ascending = False))
-vendas_categorias
-vendas_mensal
-vendas_estados
 
 ### Tabelas de vendedores
 vendedores = pd.DataFrame(dados.groupby('Vendedor')['Preço'].agg(['sum', 'count']))
