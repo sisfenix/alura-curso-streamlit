@@ -15,9 +15,28 @@ def format_number(value, prefix = ''):
 st.title('DASHBOARD DE VENDAS :shopping_trolley:')
 
 url = 'https://labdados.com/produtos'
-response = requests.get(url)
+regioes = ['Brasil', 'Centro-Oeste', 'Nordeste', 'Norte', 'Sudeste', 'Sul']
+
+st.sidebar.title('Filtros')
+
+regiao = st.sidebar.selectbox('Região', regioes)
+if regiao == 'Brasil':
+    regiao = ''
+
+todos_anos = st.sidebar.checkbox('Todo o período', value=True)
+if todos_anos:
+    ano = ''
+else:
+    ano = st.sidebar.slider('Ano', 2020, 2023)
+
+query_string = {'regiao':regiao.lower(), 'ano':ano}
+response = requests.get(url, params=query_string)
 dados = pd.DataFrame.from_dict(response.json())
 dados['Data da Compra'] = pd.to_datetime(dados['Data da Compra'], format='%d/%m/%Y')
+
+filtro_vendedores = st.sidebar.multiselect('Vendedores', dados['Vendedor'].unique())
+if filtro_vendedores:
+    dados = dados[dados['Vendedor'].isin(filtro_vendedores)]
 
 ### Tabelas
 ### Tabelas de receita
@@ -161,5 +180,3 @@ with aba3:
                                         text_auto=True,
                                         title=f'Top {quant_vendedores} vendedores (quantidade de vendas)')
         st.plotly_chart(fig_vendas_vendedores, use_container_width=True)
-
-st.dataframe(dados)
